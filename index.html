@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sugar Rush 糖分補給站｜三頁式互動網站預覽</title>
+  <!-- 載入 Tailwind CSS 與 Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* 自訂美式復古烘焙坊色彩變數與基礎樣式 */
+    :root {
+      --bg-color: #FFF8EE;       /* 燕麥奶底色 */
+      --text-color: #3D2314;     /* 濃縮咖啡棕 */
+      --primary-color: #D96B43;  /* 焦糖橘紅 */
+      --accent-color: #F2C94C;   /* 奶油黃 */
+      --card-bg: #FFFFFF;        /* 卡片純白底 */
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .brand-font {
+      font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+    }
+
+    /* 復古立體陰影效果 */
+    .retro-shadow {
+      box-shadow: 0 6px 0 var(--text-color);
+    }
+
+    .retro-shadow-sm {
+      box-shadow: 0 4px 0 var(--text-color);
+    }
+
+    .retro-btn {
+      background-color: var(--primary-color);
+      color: #FFFFFF;
+      border: 2px solid var(--text-color);
+      box-shadow: 0 4px 0 var(--text-color);
+      transition: all 0.15s ease;
+    }
+
+    .retro-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--text-color);
+      background-color: #c85c35;
+    }
+
+    .retro-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--text-color);
+    }
+
+    /* 導覽列按鈕樣式 */
+    .nav-btn {
+      color: var(--text-color);
+      font-weight: 700;
+      padding: 0.5rem 1.15rem;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .nav-btn:hover {
+      background-color: #FDE9B8;
+      border-color: var(--text-color);
+    }
+
+    .nav-btn.active {
+      background-color: var(--primary-color);
+      color: #FFFFFF;
+      border-color: var(--text-color);
+      box-shadow: 0 3px 0 var(--text-color);
+    }
+
+    /* 卡片懸停效果 */
+    .dessert-card {
+      background-color: var(--card-bg);
+      border: 2px solid #E8D7C3;
+      border-radius: 1.25rem;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .dessert-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--text-color);
+      box-shadow: 0 8px 18px rgba(61, 35, 20, 0.12);
+    }
+
+    /* 針對直向甜點照片優化的圖片容器與裁切設定 */
+    .dessert-img-box {
+      width: 100%;
+      height: 240px;
+      background-color: #FDF0DC;
+      border: 1px solid #EED9BE;
+      border-radius: 1rem;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .dessert-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .dessert-card:hover .dessert-img-box img {
+      transform: scale(1.05);
+    }
+
+    /* 頁面切換淡入動畫 */
+    .page-section {
+      display: none;
+      animation: fadeIn 0.35s ease-out;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- 置頂導覽列（Header）：左側 Logo + 右側剛好 3 個頁面切換按鈕 -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b-4 border-[#F2C94C] shadow-sm">
+    <nav class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <!-- 品牌 Logo -->
+      <button onclick="switchPage('home')" class="flex items-center gap-2 text-left focus:outline-none group">
+        <span class="text-3xl transform group-hover:rotate-12 transition-transform">🍪</span>
+        <span class="brand-font text-xl sm:text-2xl font-bold tracking-tight text-[#D96B43]">
+          Sugar Rush <span class="text-[#3D2314]">糖分補給站</span>
+        </span>
+      </button>
+
+      <!-- 導覽列 3 個主要切換按鈕 -->
+      <ul class="flex items-center gap-2 sm:gap-3" role="tablist">
+        <li>
+          <button id="nav-home" onclick="switchPage('home')" class="nav-btn active text-sm sm:text-base cursor-pointer">
+            首頁
+          </button>
+        </li>
+        <li>
+          <button id="nav-menu" onclick="switchPage('menu')" class="nav-btn text-sm sm:text-base cursor-pointer">
+            甜點菜單
+          </button>
+        </li>
+        <li>
+          <button id="nav-contact" onclick="switchPage('contact')" class="nav-btn text-sm sm:text-base cursor-pointer">
+            訂購與門市
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 主要內容區 -->
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+    <!-- ==========================================
+         第 1 頁：首頁 (Home)
+         ========================================== -->
+    <section id="page-home" class="page-section active">
+      <!-- 奶油黃 Hero 主視覺區塊 -->
+      <div class="bg-[#F2C94C] border-3 border-[#3D2314] rounded-3xl p-7 sm:p-12 text-center mb-12 retro-shadow relative overflow-hidden">
+        <!-- 裝飾圓點背景 -->
+        <div class="inline-block bg-white/90 border-2 border-[#3D2314] text-xs sm:text-sm font-bold px-4 py-1 rounded-full mb-4">
+          ✨ 每日 12:00 & 15:30 準時新鮮出爐
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-[#3D2314] mb-4 leading-snug">
+          日常太累？來一點剛出爐的糖分吧！
+        </h1>
+        <p class="text-base sm:text-lg text-[#3D2314]/90 max-w-2xl mx-auto mb-7 font-medium">
+          每天早上現烤的美式曲奇餅乾、濃郁肉桂捲與重乳酪布朗尼，幫你的心情瞬間充電。
+        </p>
+        <button onclick="switchPage('menu')" class="retro-btn px-7 py-3.5 rounded-full font-bold text-base sm:text-lg cursor-pointer">
+          查看今日甜點菜單 →
+        </button>
+      </div>
+
+      <!-- 本週人氣招牌 Top 3 -->
+      <div class="mb-6 text-center">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#D96B43] inline-flex items-center gap-2">
+          🔥 本週人氣招牌 Top 3
+        </h2>
+        <p class="text-sm text-[#3D2314]/75 mt-1">首次造訪不知道選什麼？跟著大家點這三款準沒錯！</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Top 1: 經典巧克力豆曲奇餅乾 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 若在自己電腦 VS Code 使用，可將 src 換成 images/cookie.jpg -->
+              <img src="images/ec4237b4-6f52-4333-a6cc-be7008e60816.png"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/FCECD8/3D2314?text=Chocolate+Chip+Cookie';"
+                   alt="經典巧克力豆曲奇餅乾">
+              <span class="absolute top-3 left-3 bg-[#F2C94C] border border-[#3D2314] text-xs font-bold px-3 py-1 rounded-full shadow-xs">
+                NO.1 鎮店冠軍
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-[#3D2314] mb-1.5">經典巧克力豆曲奇餅乾</h3>
+            <p class="text-sm text-[#3D2314]/80 leading-relaxed">
+              外酥內軟的厚實餅乾體，咬下滿滿香濃巧克力豆，甜而不膩。
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 85 <span class="text-xs font-normal text-[#3D2314]/70">/ 片</span></span>
+            <button onclick="quickOrder('經典巧克力豆曲奇餅乾')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+
+        <!-- Top 2: 濃郁黑糖肉桂捲 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 若在自己電腦 VS Code 使用，可將 src 換成 images/cinnamon.jpg -->
+              <img src="images/3c2a7a64-3b44-4d0b-bf9a-f11cb446bace.jpg"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/F9E5D0/3D2314?text=Cinnamon+Roll';"
+                   alt="濃郁黑糖肉桂捲">
+              <span class="absolute top-3 left-3 bg-[#F2C94C] border border-[#3D2314] text-xs font-bold px-3 py-1 rounded-full shadow-xs">
+                NO.2 每日限量
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-[#3D2314] mb-1.5">濃郁黑糖肉桂捲</h3>
+            <p class="text-sm text-[#3D2314]/80 leading-relaxed">
+              層層捲入肉桂粉與黑糖烘烤出爐，香氣濃郁、口感鬆軟。
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 110 <span class="text-xs font-normal text-[#3D2314]/70">/ 顆</span></span>
+            <button onclick="quickOrder('濃郁黑糖肉桂捲')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+
+        <!-- Top 3: 濃郁巧克力布朗尼 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 若在自己電腦 VS Code 使用，可將 src 換成 images/brownie.jpg -->
+              <img src="images/05f4fbb4-e299-4080-8a3f-393a2c9681b0.jpg"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/FBE8DC/3D2314?text=Chocolate+Brownie';"
+                   alt="濃郁巧克力布朗尼">
+              <span class="absolute top-3 left-3 bg-[#F2C94C] border border-[#3D2314] text-xs font-bold px-3 py-1 rounded-full shadow-xs">
+                NO.3 濃郁可可
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-[#3D2314] mb-1.5">濃郁巧克力布朗尼</h3>
+            <p class="text-sm text-[#3D2314]/80 leading-relaxed">
+              紮實濕潤的可可蛋糕體，帶有微脆表層，巧克力控必點。
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 95 <span class="text-xs font-normal text-[#3D2314]/70">/ 塊</span></span>
+            <button onclick="quickOrder('濃郁巧克力布朗尼')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         第 2 頁：甜點菜單 (Menu)
+         ========================================== -->
+    <section id="page-menu" class="page-section">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#D96B43]">🧁 經典手作甜點全品項</h2>
+        <p class="text-sm sm:text-base text-[#3D2314]/80 mt-2">
+          嚴選法國發酵奶油與優質可可粉，每日限量手作烘焙
+        </p>
+      </div>
+
+      <!-- 6 款全品項網格卡片 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- 1. 經典巧克力豆曲奇餅乾 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 本地檔案路徑：images/cookie.jpg -->
+              <img src="images/ec4237b4-6f52-4333-a6cc-be7008e60816.png"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/FCECD8/3D2314?text=Chocolate+Chip+Cookie';"
+                   alt="經典巧克力豆曲奇餅乾">
+            </div>
+            <span class="inline-block bg-[#F2C94C] text-xs font-bold px-3 py-0.5 rounded-full mb-2 border border-[#3D2314]">
+              曲奇系列
+            </span>
+            <h3 class="text-lg font-bold mb-1">經典巧克力豆曲奇餅乾</h3>
+            <p class="text-xs font-bold text-[#D96B43] mb-1">甜度：★★★☆☆</p>
+            <p class="text-sm text-[#3D2314]/80">外層微酥、內裡保有鬆軟嚼勁的美式厚片曲奇，每一口都能吃到香濃巧克力豆與奶油香氣，單吃或搭配熱牛奶都超療癒。</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 85</span>
+            <button onclick="quickOrder('經典巧克力豆曲奇餅乾')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+
+        <!-- 2. 濃郁黑糖肉桂捲 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 本地檔案路徑：images/cinnamon.jpg -->
+              <img src="images/3c2a7a64-3b44-4d0b-bf9a-f11cb446bace.jpg"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/F9E5D0/3D2314?text=Cinnamon+Roll';"
+                   alt="濃郁黑糖肉桂捲">
+            </div>
+            <span class="inline-block bg-[#F2C94C] text-xs font-bold px-3 py-0.5 rounded-full mb-2 border border-[#3D2314]">
+              現烤麵包
+            </span>
+            <h3 class="text-lg font-bold mb-1">濃郁黑糖肉桂捲</h3>
+            <p class="text-xs font-bold text-[#D96B43] mb-1">甜度：★★★★☆</p>
+            <p class="text-sm text-[#3D2314]/80">麵糰層層捲入肉桂與黑糖慢火烘烤，出爐時散發溫暖迷人的香料甜香，外皮微香酥、內層蓬鬆柔軟，是下午茶時光的人氣招牌。</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 110</span>
+            <button onclick="quickOrder('濃郁黑糖肉桂捲')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+
+        <!-- 3. 濃郁巧克力布朗尼 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 本地檔案路徑：images/brownie.jpg -->
+              <img src="images/05f4fbb4-e299-4080-8a3f-393a2c9681b0.jpg"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/FBE8DC/3D2314?text=Chocolate+Brownie';"
+                   alt="濃郁巧克力布朗尼">
+            </div>
+            <span class="inline-block bg-[#F2C94C] text-xs font-bold px-3 py-0.5 rounded-full mb-2 border border-[#3D2314]">
+              可可系列
+            </span>
+            <h3 class="text-lg font-bold mb-1">濃郁巧克力布朗尼</h3>
+            <p class="text-xs font-bold text-[#D96B43] mb-1">甜度：★★★☆☆</p>
+            <p class="text-sm text-[#3D2314]/80">選用濃郁可可烘烤出帶有微脆表層與濕潤紮實內心的布朗尼，巧克力風味醇厚不死甜，微加熱後口感更加滑順濃郁。</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 95</span>
+            <button onclick="quickOrder('濃郁巧克力布朗尼')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+
+        <!-- 4. 蜂蜜美式鬆餅 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 本地檔案路徑：images/pancake.jpg -->
+              <img src="images/96fae135-a5d0-4f2d-8752-3905c2a7440c.jpg"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/FFF3D6/3D2314?text=Honey+Pancakes';"
+                   alt="蜂蜜美式鬆餅">
+            </div>
+            <span class="inline-block bg-[#F2C94C] text-xs font-bold px-3 py-0.5 rounded-full mb-2 border border-[#3D2314]">
+              早午茶推薦
+            </span>
+            <h3 class="text-lg font-bold mb-1">蜂蜜美式鬆餅</h3>
+            <p class="text-xs font-bold text-[#D96B43] mb-1">甜度：★★★☆☆</p>
+            <p class="text-sm text-[#3D2314]/80">煎至金黃蓬鬆的美式鬆餅層層堆疊，淋上香甜蜂蜜後濕潤不乾口，充滿蛋奶與麥香，適合當作元氣早午餐或悠閒午茶。</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 120</span>
+            <button onclick="quickOrder('蜂蜜美式鬆餅')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+
+        <!-- 5. 經典糖霜甜甜圈 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 本地檔案路徑：images/donut.jpg -->
+              <img src="images/6a63f6e7-9de5-4166-80a0-6c28e8ce52e9.jpg"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/FDE8EC/3D2314?text=Glazed+Donut';"
+                   alt="經典糖霜甜甜圈">
+            </div>
+            <span class="inline-block bg-[#F2C94C] text-xs font-bold px-3 py-0.5 rounded-full mb-2 border border-[#3D2314]">
+              人氣點心
+            </span>
+            <h3 class="text-lg font-bold mb-1">經典糖霜甜甜圈</h3>
+            <p class="text-xs font-bold text-[#D96B43] mb-1">甜度：★★★★☆</p>
+            <p class="text-sm text-[#3D2314]/80">鬆軟輕盈的甜甜圈外層裹上一層薄脆甜蜜糖霜，咬下先是清甜糖衣，接著是柔軟麵糰香氣，輕鬆帶來滿滿糖分幸福感。</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 75</span>
+            <button onclick="quickOrder('經典糖霜甜甜圈')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+
+        <!-- 6. 重乳酪蛋糕 -->
+        <article class="dessert-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="dessert-img-box">
+              <!-- 本地檔案路徑：images/cheesecake.jpg -->
+              <img src="images/04d26976-54e9-4f54-ae0a-5411c63786aa.jpg"
+                   onerror="this.onerror=null;this.src='https://placehold.co/600x450/F6EFE6/3D2314?text=Basque+Cheesecake';"
+                   alt="重乳酪蛋糕">
+            </div>
+            <span class="inline-block bg-[#F2C94C] text-xs font-bold px-3 py-0.5 rounded-full mb-2 border border-[#3D2314]">
+              冷藏蛋糕
+            </span>
+            <h3 class="text-lg font-bold mb-1">重乳酪蛋糕</h3>
+            <p class="text-xs font-bold text-[#D96B43] mb-1">甜度：★★☆☆☆</p>
+            <p class="text-sm text-[#3D2314]/80">高溫烘烤出焦香表層，內部保留綿密細緻又濃郁的乳酪口感，尾韻帶有一抹焦糖香氣，冰涼品嚐更加滑順迷人。</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[#F3E6D8] flex items-center justify-between">
+            <span class="text-lg font-extrabold text-[#D96B43]">NT$ 130</span>
+            <button onclick="quickOrder('重乳酪蛋糕')" class="text-xs font-bold bg-[#FFF8EE] hover:bg-[#F2C94C] border border-[#3D2314] px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+              立即預訂
+            </button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         第 3 頁：訂購與門市 (Contact & Order)
+         ========================================== -->
+    <section id="page-contact" class="page-section">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#D96B43]">📍 門市資訊與甜點預訂</h2>
+        <p class="text-sm sm:text-base text-[#3D2314]/80 mt-2">
+          歡迎提前線上預留當日限量甜點，避免現場向隅！
+        </p>
+      </div>
+
+      <!-- 門市資訊兩張卡片 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div class="dessert-card p-6 flex items-start gap-4">
+          <div class="text-3xl bg-[#F2C94C] p-3 rounded-2xl border-2 border-[#3D2314]">🏠</div>
+          <div>
+            <h3 class="text-lg font-bold text-[#3D2314] mb-1">工作室地址</h3>
+            <p class="font-bold text-[#D96B43]">雲林縣斗六市大學路三段 123 號</p>
+            <p class="text-sm text-[#3D2314]/80 mt-1">（提供外帶自取與少量窗邊內用座位）</p>
+          </div>
+        </div>
+
+        <div class="dessert-card p-6 flex items-start gap-4">
+          <div class="text-3xl bg-[#F2C94C] p-3 rounded-2xl border-2 border-[#3D2314]">⏰</div>
+          <div>
+            <h3 class="text-lg font-bold text-[#3D2314] mb-1">營業時間</h3>
+            <p class="font-bold text-[#D96B43]">週二至週日：12:00 – 19:30</p>
+            <p class="text-sm text-[#3D2314]/80 mt-1">每週一公休（出爐時間：12:00、15:30）</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 線上預留甜點表單 -->
+      <div class="max-w-xl mx-auto bg-white border-3 border-[#3D2314] rounded-3xl p-6 sm:p-8 retro-shadow">
+        <h3 class="text-xl sm:text-2xl font-extrabold text-center mb-6 text-[#3D2314]">
+          📝 線上預留甜點表單
+        </h3>
+
+        <form id="order-form" onsubmit="handleOrderSubmit(event)" class="space-y-4">
+          <!-- 訂購人姓名 -->
+          <div>
+            <label for="customer-name" class="block font-bold mb-1.5 text-sm sm:text-base">
+              訂購人姓名 <span class="text-[#D96B43]">*</span>
+            </label>
+            <input type="text" id="customer-name" required placeholder="請輸入您的稱呼（例如：陳同學）"
+              class="w-full px-4 py-2.5 rounded-xl border-2 border-[#E5D5C3] focus:border-[#D96B43] focus:outline-none bg-[#FFFDF9]">
+          </div>
+
+          <!-- 想預訂的甜點 -->
+          <div>
+            <label for="dessert-select" class="block font-bold mb-1.5 text-sm sm:text-base">
+              想預訂的甜點
+            </label>
+            <select id="dessert-select" onchange="updateTotalPrice()"
+              class="w-full px-4 py-2.5 rounded-xl border-2 border-[#E5D5C3] focus:border-[#D96B43] focus:outline-none bg-[#FFFDF9]">
+              <option value="經典巧克力豆曲奇餅乾" data-price="85">經典巧克力豆曲奇餅乾 (NT$ 85)</option>
+              <option value="濃郁黑糖肉桂捲" data-price="110">濃郁黑糖肉桂捲 (NT$ 110)</option>
+              <option value="濃郁巧克力布朗尼" data-price="95">濃郁巧克力布朗尼 (NT$ 95)</option>
+              <option value="蜂蜜美式鬆餅" data-price="120">蜂蜜美式鬆餅 (NT$ 120)</option>
+              <option value="經典糖霜甜甜圈" data-price="75">經典糖霜甜甜圈 (NT$ 75)</option>
+              <option value="重乳酪蛋糕" data-price="130">重乳酪蛋糕 (NT$ 130)</option>
+            </select>
+          </div>
+
+          <!-- 數量與即時總金額試算 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+            <div>
+              <label for="order-qty" class="block font-bold mb-1.5 text-sm sm:text-base">
+                數量
+              </label>
+              <input type="number" id="order-qty" value="1" min="1" max="20" oninput="updateTotalPrice()"
+                class="w-full px-4 py-2.5 rounded-xl border-2 border-[#E5D5C3] focus:border-[#D96B43] focus:outline-none bg-[#FFFDF9]">
+            </div>
+
+            <div class="bg-[#FFF8EE] border-2 border-[#F2C94C] rounded-xl px-4 py-2.5 flex justify-between items-center">
+              <span class="text-sm font-bold text-[#3D2314]/80">預估總金額：</span>
+              <span id="total-price" class="text-xl font-extrabold text-[#D96B43]">NT$ 85</span>
+            </div>
+          </div>
+
+          <!-- 備註 -->
+          <div>
+            <label for="order-note" class="block font-bold mb-1.5 text-sm sm:text-base">
+              備註（取貨時間或特殊需求）
+            </label>
+            <textarea id="order-note" rows="3" placeholder="例如：下午 4 點自取、需要紙袋"
+              class="w-full px-4 py-2.5 rounded-xl border-2 border-[#E5D5C3] focus:border-[#D96B43] focus:outline-none bg-[#FFFDF9]"></textarea>
+          </div>
+
+          <button type="submit" class="retro-btn w-full py-3.5 rounded-full font-bold text-base sm:text-lg mt-2 cursor-pointer">
+            確認送出預訂 ✨
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 頁尾 Footer -->
+  <footer class="bg-[#3D2314] text-[#FFF8EE] text-center py-6 px-4 mt-12">
+    <p class="text-sm sm:text-base font-medium">
+      © 2026 Sugar Rush 糖分補給站｜通識課網頁程式設計作品
+    </p>
+  </footer>
+
+  <!-- 自訂美式復古成功預訂提示 Modal（取代原生 alert） -->
+  <div id="order-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="bg-[#FFF8EE] border-3 border-[#3D2314] rounded-3xl max-w-md w-full p-6 sm:p-7 text-center retro-shadow transform transition-all">
+      <div class="w-16 h-16 bg-[#F2C94C] border-2 border-[#3D2314] rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+        🎉
+      </div>
+      <h4 class="text-xl sm:text-2xl font-extrabold text-[#D96B43] mb-2">已收到您的甜點預訂！</h4>
+      <p id="modal-summary" class="text-sm sm:text-base text-[#3D2314] bg-white border border-[#E5D5C3] rounded-2xl p-4 mb-5 leading-relaxed text-left">
+        <!-- 動態填入訂單摘要 -->
+      </p>
+      <button onclick="closeOrderModal()" class="retro-btn px-8 py-2.5 rounded-full font-bold text-base cursor-pointer">
+        太棒了，我知道了！
+      </button>
+    </div>
+  </div>
+
+  <!-- 互動腳本 -->
+  <script>
+    // 切換 3 個頁面（首頁、甜點菜單、訂購與門市）
+    function switchPage(pageId) {
+      // 隱藏所有頁面區塊
+      const pages = document.querySelectorAll('.page-section');
+      pages.forEach(page => page.classList.remove('active'));
+
+      // 移除所有導覽按鈕的 active 狀態
+      const navButtons = document.querySelectorAll('.nav-btn');
+      navButtons.forEach(btn => btn.classList.remove('active'));
+
+      // 顯示目標頁面與對應導覽按鈕
+      const targetPage = document.getElementById('page-' + pageId);
+      const targetNav = document.getElementById('nav-' + pageId);
+      if (targetPage) targetPage.classList.add('active');
+      if (targetNav) targetNav.classList.add('active');
+
+      // 平滑捲動回到頁面頂端
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 點擊卡片上的「立即預訂」直接跳轉到第 3 頁並自動選好該品項
+    function quickOrder(dessertName) {
+      switchPage('contact');
+      const selectEl = document.getElementById('dessert-select');
+      for (let i = 0; i < selectEl.options.length; i++) {
+        if (selectEl.options[i].value === dessertName) {
+          selectEl.selectedIndex = i;
+          break;
+        }
+      }
+      updateTotalPrice();
+    }
+
+    // 動態計算預訂表單總金額
+    function updateTotalPrice() {
+      const selectEl = document.getElementById('dessert-select');
+      const qtyEl = document.getElementById('order-qty');
+      const totalEl = document.getElementById('total-price');
+
+      const selectedOption = selectEl.options[selectEl.selectedIndex];
+      const unitPrice = parseInt(selectedOption.getAttribute('data-price'), 10) || 0;
+      let qty = parseInt(qtyEl.value, 10);
+      if (isNaN(qty) || qty < 1) qty = 1;
+
+      const total = unitPrice * qty;
+      totalEl.textContent = 'NT$ ' + total;
+    }
+
+    // 處理表單送出並顯示美觀提示框
+    function handleOrderSubmit(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('customer-name').value.trim();
+      const selectEl = document.getElementById('dessert-select');
+      const item = selectEl.value;
+      const qty = document.getElementById('order-qty').value;
+      const note = document.getElementById('order-note').value.trim();
+      const totalText = document.getElementById('total-price').textContent;
+
+      const summaryHtml = `
+        <span class="block mb-1"><strong>訂購人：</strong>${escapeHtml(name)}</span>
+        <span class="block mb-1"><strong>預訂品項：</strong>${escapeHtml(item)} × ${escapeHtml(qty)}</span>
+        <span class="block mb-1"><strong>預估金額：</strong><span class="text-[#D96B43] font-bold">${totalText}</span></span>
+        <span class="block"><strong>備註事項：</strong>${note ? escapeHtml(note) : '無'}</span>
+      `;
+
+      document.getElementById('modal-summary').innerHTML = summaryHtml;
+      const modal = document.getElementById('order-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      // 重設表單並恢復預設金額
+      document.getElementById('order-form').reset();
+      updateTotalPrice();
+    }
+
+    // 關閉成功提示視窗
+    function closeOrderModal() {
+      const modal = document.getElementById('order-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // 防止 XSS 的簡易字元轉義
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
